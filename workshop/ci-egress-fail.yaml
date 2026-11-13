@@ -17,7 +17,7 @@ checks:
     description: Tries to reach a host it hasn't listed; the VM is destroyed
     timeout: 5m
     script: |
-      python3 - <<'PY'
+      python3.13 - <<'PY'
       import urllib.request
 
       print("Trying to reach example.com, which isn't on the egress list...")

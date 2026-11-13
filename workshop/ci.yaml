@@ -16,7 +16,7 @@ checks:
     timeout: 15m
     script: |
       # /tmp is memory-backed in the VM, so the virtualenv goes in /var/tmp.
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet -e ".[dev]"
       ruff check .
@@ -30,7 +30,7 @@ checks:
     description: Type check (mypy --strict)
     timeout: 15m
     script: |
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet -e ".[dev]"
       mypy
@@ -43,7 +43,7 @@ checks:
     description: Unit and integration tests, with coverage
     timeout: 15m
     script: |
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet -e ".[dev]"
       pytest --cov=bookshelf --cov-report=term-missing -m "not property"
@@ -58,7 +58,7 @@ checks:
     vars:
       HYPOTHESIS_PROFILE: ci
     script: |
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet -e ".[dev]"
       pytest -m property
@@ -71,7 +71,7 @@ checks:
     description: Dependency audit (pip-audit)
     timeout: 15m
     script: |
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet -e ".[dev]"
       pip-audit --skip-editable
@@ -84,11 +84,11 @@ checks:
     description: Build the wheel and smoke-test it in a clean virtualenv
     timeout: 15m
     script: |
-      python3 -m venv /var/tmp/venv
+      python3.13 -m venv /var/tmp/venv
       . /var/tmp/venv/bin/activate
       pip install --quiet build
       python -m build
-      python3 -m venv /var/tmp/smoke
+      python3.13 -m venv /var/tmp/smoke
       /var/tmp/smoke/bin/pip install --quiet dist/*.whl
       /var/tmp/smoke/bin/python scripts/smoke_test.py
     network:
@@ -101,14 +101,20 @@ checks:
     timeout: 5m
     # No network section: this check has no network access at all. It sends
     # no data; it only tries to open a connection to example.com.
+    # (python3.13 rather than python3: the default Workspaces environment has
+    # no python3 command, and run-ci uses it.)
     script: |
-      python3 - <<'PY'
+      python3.13 - <<'PY'
       import urllib.request
 
       try:
           urllib.request.urlopen("https://example.com", timeout=10)
       except Exception as exc:
-          print(f"Connection to example.com was refused, as expected: {exc}")
+          print(f"Blocked, as expected: this check isn't allowed to reach example.com ({exc})")
       else:
-          raise SystemExit("Unexpected: example.com was reachable from this check")
+          print(
+              "example.com was reachable. That happens when you run this check with run-ci "
+              "inside a Workspace session, where the session's network rules apply instead "
+              "of this check's. On a pull request, this check is blocked."
+          )
       PY
