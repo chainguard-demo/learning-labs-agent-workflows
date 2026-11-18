@@ -19,8 +19,8 @@ Everything in this lab runs on Chainguard's free Starter plan. You don't need a 
 Use the template rather than forking. Forks have GitHub Actions turned off by default, and pull requests from a fork go to the original repo.
 
 ```shell
-gh repo create my-agent-workflows-lab --template chainguard-demo/learning-labs-agent-workflows --public --clone
-cd my-agent-workflows-lab
+gh repo create my-lab --template chainguard-demo/learning-labs-agent-workflows --public --clone
+cd my-lab
 ```
 
 No `gh`? Click **Use this template** at the top of this page, create the repo, then `git clone` it.
