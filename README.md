@@ -73,7 +73,7 @@ On the pull request you'll see two kinds of checks:
 - **GitHub Actions** (`CI / ...`): the existing workflow in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 - **Chainguard Checks (presubmit)**: a summary of the checks you just added. "Presubmit" means they run on the pull request, before merge.
 
-Compare how long each takes. Then open the `egress-demo` check: it tries to reach `example.com`, which isn't on its list, and the connection is refused.
+Open the `egress-demo` check: it tries to reach `example.com`, which isn't on its list, so the connection is blocked.
 
 ### 7. Optional: require the checks before merging
 
